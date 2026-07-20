@@ -1,7 +1,7 @@
-# Developer version of configurations
+# Production configuration
 
 server:
-  port: 8086
+  port: ${PORT:8080}
 
 spring:
   datasource:
@@ -11,36 +11,33 @@ spring:
 
     hikari:
       pool-name: HikariCP
-      maximum-pool-size: 5
+      maximum-pool-size: 10
       connection-timeout: 10000
       idle-timeout: 600000
       max-lifetime: 1800000
-      validation-timeout: 1800000
-      leak-detection-threshold: 0
-      initialization-failed-timeout: -1
 
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID:test-client-id}
-            client-secret: ${GOOGLE_CLIENT_SECRET:test-client-secret}
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope:
               - openid
               - profile
               - email
 
           github:
-            client-id: ${GITHUB_CLIENT_ID:test-client-id}
-            client-secret: ${GITHUB_CLIENT_SECRET:test-client-secret}
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope:
               - read:user
               - user:email
 
   jpa:
-    show-sql: true
+    show-sql: false
 
     hibernate:
       ddl-auto: update
@@ -49,30 +46,33 @@ spring:
       hibernate:
         format_sql: false
 
-
+logging:
+  level:
+    root: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
 
 security:
   jwt:
-    secret: ${JWT_SECRET:mySuperSecretKeyForJwtTokenGeneration123456789}
-    issuer: ${ISSUER:api.substring.com}
+    secret: ${JWT_SECRET}
+    issuer: ${ISSUER}
 
-    access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:600}
-    refresh-ttl-seconds: ${JWT_REFRESH_TTL_SECONDS:86400}
+    access-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:900}
+    refresh-ttl-seconds: ${JWT_REFRESH_TTL_SECONDS:604800}
 
     refresh-token-cookie-name: ${JWT_REFRESH_COOKIE_NAME:refreshToken}
 
-    cookie-secure: false
+    cookie-secure: true
     cookie-http-only: true
-    cookie-same-site: lax
+    cookie-same-site: none
     cookie-domain:
-
-
 
 app:
   cors:
-    front-end-url: ${FRONTEND_URL:http://localhost:5173}
+    front-end-url: ${FRONTEND_URL}
 
   auth:
     frontend:
-      success-redirect: ${FRONT_END_SUCCESS_URL:http://localhost:5173/auth/success}
-      failure-redirect: ${FRONT_END_SUCCESS_URL:http://localhost:5173/auth/failure}
+      success-redirect: ${FRONT_END_SUCCESS_URL}
+      failure-redirect: ${FRONT_END_FAILURE_URL}
